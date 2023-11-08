@@ -24,11 +24,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FriendsPage(paddingValues: PaddingValues) {
-    val configuration = LocalConfiguration.current
-    val density = LocalDensity.current
-    val screenWidthDp = configuration.screenWidthDp.dp
-    val screenHeightDp = configuration.screenHeightDp.dp
-    Log.d("TAG", "height: $screenHeightDp width: $screenWidthDp")
 
     val tabItems = listOf(
         TabItem(title = "添加"),
