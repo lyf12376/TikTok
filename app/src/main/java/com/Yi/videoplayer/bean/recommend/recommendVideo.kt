@@ -7,6 +7,7 @@ data class recommendVideo (
     val author:Author,
     val like:Int,
     val totalComments:Int,
+    val storage:Int,
     val shared:Int,
     val comments:List<comment>
 )
