@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.Yi.videoplayer.Pages.homePage.recommend.RecommendPage
 import com.Yi.videoplayer.bean.TabItem
 import kotlinx.coroutines.launch
 
@@ -33,7 +34,9 @@ fun HomePage(paddingValues: PaddingValues)
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
 
-    Column(modifier = Modifier.fillMaxSize().padding(paddingValues) ) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(paddingValues) ) {
         TabRow(
             selectedTabIndex = pagerState.currentPage
         ) {
@@ -51,7 +54,7 @@ fun HomePage(paddingValues: PaddingValues)
             state = pagerState,
         ) { page ->
             when (page) {
-                0 -> { Text("推荐", modifier = Modifier.fillMaxSize()) }
+                0 -> { RecommendPage() }
                 1 -> { Text("长视频", modifier = Modifier.fillMaxSize()) }
                 2 -> { Text("本地", modifier = Modifier.fillMaxSize()) }
             }
