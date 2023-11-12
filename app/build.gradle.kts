@@ -55,6 +55,8 @@ android {
 dependencies {
     //Hilt依赖注入
     implementation("com.google.dagger:hilt-android:2.44.2")
+    implementation("androidx.vectordrawable:vectordrawable:1.1.0")
+    implementation("androidx.appcompat:appcompat-resources:1.6.1")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
 
@@ -94,6 +96,8 @@ dependencies {
     //retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
 }
 
 // Allow references to generated code

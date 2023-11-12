@@ -1,6 +1,5 @@
 package com.Yi.videoplayer.CustomAnimation
 
-
 import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -24,13 +23,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.PointMode
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.DrawStyle
+import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,9 +48,11 @@ import com.Yi.videoplayer.Pages.homePage.recommend.RecommendViewModel
 import com.Yi.videoplayer.R
 import com.Yi.videoplayer.utils.DpToPx
 import kotlinx.coroutines.delay
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Composable
-fun LikeAnimation(
+fun StorageAnimation(
     widthDp: Dp,
     heightDp: Dp,
     modifier: Modifier,
@@ -50,10 +61,10 @@ fun LikeAnimation(
     var start by remember {
         mutableStateOf(false)
     }
-    var likeScale = remember {
+    var storageScale = remember {
         Animatable(1f)
     }
-    var liked by remember {
+    var storaged by remember {
         mutableStateOf(false)
     }
     var enabled by remember {
@@ -66,22 +77,22 @@ fun LikeAnimation(
     var isClicked by remember {
         mutableStateOf(false)
     }
-    LaunchedEffect(liked) {
-        if (liked) {
-            likeScale.animateTo(
+    LaunchedEffect(storaged) {
+        if (storaged) {
+            storageScale.animateTo(
                 targetValue = 0f,
                 animationSpec = tween(
                     durationMillis = 0
                 )
             )
-            likeScale.animateTo(
+            storageScale.animateTo(
                 targetValue = 1.2f,
                 animationSpec = tween(
                     durationMillis = 400,
                     easing = FastOutSlowInEasing
                 )
             )
-            likeScale.animateTo(
+            storageScale.animateTo(
                 targetValue = 1f,
                 animationSpec = tween(
                     durationMillis = 200,
@@ -123,42 +134,38 @@ fun LikeAnimation(
             enabled = true
         }
     }
-    val painter: Painter = painterResource(R.drawable.like_selected)
-    val path = Path()
     val width = DpToPx(dp = widthDp)
     val height = DpToPx(dp = heightDp)
-    path.moveTo(width / 2, height / 5);
 
-    // Upper left path
-    path.cubicTo(
-        5 * width / 14, 0f,
-        0f, height / 15,
-        width / 28, 2 * height / 5
-    )
+    val starPath = Path()
+    val widthRect = width * 0.96f
+    val heightRect = height * 0.96f
+    val centerX = width / 2
+    val centerY = height / 2
+    val radius = width / 2
+    val value = 0.8
 
-    // Lower left path
-    path.cubicTo(
-        width / 14, 2 * height / 3,
-        3 * width / 7, 5 * height / 6,
-        width / 2, height
-    )
+    val anglePerPoint = Math.toRadians(36.0)
+    var currentAngle = Math.toRadians(-90.0) // 从顶点开始绘制
 
-    // Lower right path
-    path.cubicTo(
-        4 * width / 7, 5 * height / 6,
-        13 * width / 14, 2 * height / 3,
-        27 * width / 28, 2 * height / 5
-    )
+    for (i in 0 until 10) {
+        val pointRadius = if (i % 2 == 0) radius else radius * 0.5f
+        val x = centerX + pointRadius * cos(currentAngle)
+        val y = centerY + pointRadius * sin(currentAngle)
+        Log.d("TAG", "StorageAnimation: x $x, y $y")
+        if (i == 0) {
+            starPath.moveTo(x.toFloat(), y.toFloat())
+        } else {
+            starPath.lineTo(x.toFloat(), y.toFloat())
+        }
 
-    // Upper right path
-    path.cubicTo(
-        width, height / 15,
-        9 * width / 14, 0f,
-        width / 2, height / 5
-    )
+        currentAngle += anglePerPoint
+    }
+
+    starPath.close()
 
     val pathMeasure = PathMeasure()
-    pathMeasure.setPath(path, true) // 设置要测量的路径，并指定路径为封闭的
+    pathMeasure.setPath(starPath, true) // 设置要测量的路径，并指定路径为封闭的
 
     val distanceInterval = 10f // 距离间隔，用于控制采样的密度
     val totalLength = pathMeasure.length // 获取路径的总长度
@@ -168,6 +175,7 @@ fun LikeAnimation(
     var distance = 0f // 距离起点的距离
     while (distance <= totalLength) {
         val point = pathMeasure.getPosition(distance) // 获取路径上指定距离处的点的坐标
+        Log.d("TAG", "StorageAnimation: ${pathMeasure.getPosition(0f)}")
         points.add(point) // 将点的坐标添加到集合中
 
         distance += distanceInterval // 增加距离，以便获取下一个点的坐标
@@ -178,8 +186,8 @@ fun LikeAnimation(
         Log.d("TAG", "LikeAnimation: $point")
     }
 
-    val like by viewModel.like
-    val likes by viewModel.likes
+    val storage by viewModel.storage
+    val storages by viewModel.storages
     Box(
         modifier = modifier
     ) {
@@ -190,26 +198,26 @@ fun LikeAnimation(
                     .width(40.dp)
             ) {
                 Image(
-                    painterResource(id = if (like) R.drawable.like_selected else R.drawable.like_unselected),
+                    painterResource(id = if (storage) R.drawable.storage_selected else R.drawable.storage_unselected),
                     contentDescription = "喜欢",
                     modifier = Modifier
                         .align(
                             Alignment.Center
                         )
                         .size(40.dp)
-                        .scale(likeScale.value)
+                        .scale(storageScale.value)
                         .clickable(enabled = enabled) {
                             start = true
-                            if (viewModel.like.value) {
-                                viewModel.like.value = !viewModel.like.value
-                                viewModel.likes.value--
-                                liked = !liked
+                            if (viewModel.storage.value) {
+                                viewModel.storage.value = !viewModel.storage.value
+                                viewModel.storages.value--
+                                storaged = !storaged
                                 isClicked = !isClicked
                             } else {
                                 enabled = false
-                                viewModel.like.value = !viewModel.like.value
-                                viewModel.likes.value++
-                                liked = !liked
+                                viewModel.storage.value = !viewModel.storage.value
+                                viewModel.storages.value++
+                                storaged = !storaged
                                 isClicked = !isClicked
                             }
                         }
@@ -220,21 +228,23 @@ fun LikeAnimation(
                         .height(40.dp)
                         .width(40.dp)
                 ) {
+//                    drawCircle(color = Color.Red, radius = heightRect/2, center = Offset(width/2,height/2))
                     scale(animScale.value) {
                         if (start) {
                             drawPoints(
                                 points.toList(),
                                 pointMode = PointMode.Points,
-                                Color.Red,
+                                Color.Yellow,
                                 strokeWidth = 2.5f
                             )
                         }
                     }
+
                 }
             }
 
             Text(
-                text = "$likes",
+                text = "$storages",
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 fontSize = 24.sp,
                 color = Color.Black
@@ -245,5 +255,9 @@ fun LikeAnimation(
     }
 }
 
+@Composable
+@Preview
+fun starPrev(){
+    StorageAnimation(widthDp = 40.dp, heightDp = 40.dp, modifier = Modifier)
 
-
+}
