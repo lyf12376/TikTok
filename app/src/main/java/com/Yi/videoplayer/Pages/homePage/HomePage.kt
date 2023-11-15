@@ -1,5 +1,6 @@
 package com.Yi.videoplayer.Pages.homePage
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,14 +16,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.Yi.videoplayer.Pages.homePage.recommend.RecommendPage
 import com.Yi.videoplayer.bean.TabItem
 import kotlinx.coroutines.launch
+import kotlin.system.measureTimeMillis
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomePage(paddingValues: PaddingValues)
+fun HomePage(paddingValues: PaddingValues, homeViewModel: HomeViewModel = hiltViewModel())
 {
     val tabItems = listOf(
         TabItem(title = "推荐"),

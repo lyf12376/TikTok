@@ -57,6 +57,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.44.2")
     implementation("androidx.vectordrawable:vectordrawable:1.1.0")
     implementation("androidx.appcompat:appcompat-resources:1.6.1")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
 
@@ -81,6 +82,10 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("com.google.accompanist:accompanist-permissions:0.31.0-alpha")
 
+    //exoplayer
+    implementation ("androidx.media3:media3-exoplayer:1.1.1")
+    implementation ("androidx.media3:media3-exoplayer-dash:1.1.1")
+    implementation ("androidx.media3:media3-ui:1.1.1")
 
     //room
     implementation("androidx.room:room-runtime:2.5.2")

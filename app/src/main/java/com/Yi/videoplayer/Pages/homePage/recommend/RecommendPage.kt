@@ -28,11 +28,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType.Companion.Uri
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.Yi.videoplayer.CustomAnimation.LikeAnimation
 import com.Yi.videoplayer.CustomAnimation.StorageAnimation
@@ -40,6 +43,7 @@ import com.Yi.videoplayer.Pages.ScreenData
 import com.Yi.videoplayer.R
 import com.Yi.videoplayer.bean.author.Author
 import com.Yi.videoplayer.bean.shortVideo.ShortVideo
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -84,10 +88,17 @@ fun RecommendVideo() {
             .fillMaxHeight(),
         contentAlignment = Alignment.CenterEnd
     ) {
+        VideoPlayer()
         RightItemColumn(userPhoto = R.drawable.add, shortVideo = shortVideo)
         content(video = shortVideo)
     }
 }
+
+@Composable
+fun VideoPlayer(){
+
+}
+
 
 @Composable
 fun content(video: ShortVideo) {
@@ -215,7 +226,9 @@ fun RightItemColumn(
                 contentDescription = "头像",
                 tint = Color.Unspecified
             )
-            LikeAnimation(widthDp = 40.dp, heightDp = 40.dp, modifier = Modifier.weight(1f).align(Alignment.CenterHorizontally))
+            LikeAnimation(widthDp = 40.dp, heightDp = 40.dp, modifier = Modifier
+                .weight(1f)
+                .align(Alignment.CenterHorizontally))
             VideoItems(
                 modifier = Modifier
                     .weight(1f)
@@ -224,7 +237,9 @@ fun RightItemColumn(
                 description = "评论",
                 times = 0
             )
-            StorageAnimation(widthDp = 40.dp, heightDp = 40.dp, modifier = Modifier.weight(1f).align(Alignment.CenterHorizontally))
+            StorageAnimation(widthDp = 40.dp, heightDp = 40.dp, modifier = Modifier
+                .weight(1f)
+                .align(Alignment.CenterHorizontally))
             VideoItems(
                 modifier = Modifier
                     .weight(1f)

@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    const val OFFICIAL_URL:String = "https://autumnfish.cn/search"
+    const val OFFICIAL_URL:String = "http://123.56.73.64:8888/"
     const val OFFICIAL = "Official"
     /**
      *提供OkHttpClient对象,在其中添加拦截器，给header添加cookie，为未来需要cookie的接口做准备 */
@@ -43,6 +43,8 @@ object AppModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
+
 
 
 }
