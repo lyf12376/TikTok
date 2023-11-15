@@ -237,7 +237,7 @@ fun LikeAnimation(
                 text = "$likes",
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 fontSize = 24.sp,
-                color = Color.Black
+                color = Color.White
             )
 
         }

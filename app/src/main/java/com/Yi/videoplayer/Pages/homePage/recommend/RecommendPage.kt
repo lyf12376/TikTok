@@ -5,7 +5,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -25,20 +24,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType.Companion.Uri
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.Yi.videoplayer.CustomAnimation.LikeAnimation
 import com.Yi.videoplayer.CustomAnimation.StorageAnimation
+import com.Yi.videoplayer.CustomView.Video
 import com.Yi.videoplayer.Pages.ScreenData
 import com.Yi.videoplayer.R
 import com.Yi.videoplayer.bean.author.Author
@@ -54,49 +48,39 @@ fun RecommendPage(recommendViewModel: RecommendViewModel = hiltViewModel()) {
     val shortVideo =
         ShortVideo(Author("李仁🐎", "photo.url"), "这是一个测试", 10, 10, 0, 0, emptyList())
 
+    val recommendVideoList = remember {
+        mutableListOf<ShortVideo>()
+    }
+    recommendVideoList.add(shortVideo)
+
     VerticalPager(
-        pageCount = 3, state = pagerState, modifier = Modifier
+        pageCount = recommendVideoList.size, state = pagerState, modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
     ) {
-        when (it) {
-            0 -> {
-                RecommendVideo()
-            }
-
-            1 -> {
-                RecommendVideo()
-            }
-
-            2 -> {
-                RecommendVideo()
-            }
-        }
+        RecommendVideo(recommendVideoList[it])
     }
 
 }
 
-@Preview
 @Composable
-fun RecommendVideo() {
-    val shortVideo =
-        ShortVideo(Author("李仁🐎", "photo.url"), "这是一个测试", 10, 10, 0, 0, emptyList())
+fun RecommendVideo(shortVideo: ShortVideo) {
     Box(
         modifier = Modifier
-            .background(Color.White)
+            .background(Color.Black)
             .fillMaxWidth()
             .fillMaxHeight(),
         contentAlignment = Alignment.CenterEnd
     ) {
-        VideoPlayer()
+        VideoPlayer(Modifier.align(Alignment.Center))
         RightItemColumn(userPhoto = R.drawable.add, shortVideo = shortVideo)
         content(video = shortVideo)
     }
 }
 
 @Composable
-fun VideoPlayer(){
-
+fun VideoPlayer(modifier: Modifier) {
+    Video(modifier)
 }
 
 
@@ -114,12 +98,14 @@ fun content(video: ShortVideo) {
                     .padding(horizontal = 12.dp)
                     .padding(),
                 fontWeight = FontWeight.Bold,
+                color = Color.White,
                 fontSize = 24.sp
             )
             Text(
                 text = video.introduction,
                 modifier = Modifier
                     .padding(12.dp),
+                color = Color.White,
                 fontSize = 24.sp
             )
         }
@@ -226,9 +212,11 @@ fun RightItemColumn(
                 contentDescription = "头像",
                 tint = Color.Unspecified
             )
-            LikeAnimation(widthDp = 40.dp, heightDp = 40.dp, modifier = Modifier
-                .weight(1f)
-                .align(Alignment.CenterHorizontally))
+            LikeAnimation(
+                widthDp = 40.dp, heightDp = 40.dp, modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterHorizontally)
+            )
             VideoItems(
                 modifier = Modifier
                     .weight(1f)
@@ -237,9 +225,11 @@ fun RightItemColumn(
                 description = "评论",
                 times = 0
             )
-            StorageAnimation(widthDp = 40.dp, heightDp = 40.dp, modifier = Modifier
-                .weight(1f)
-                .align(Alignment.CenterHorizontally))
+            StorageAnimation(
+                widthDp = 40.dp, heightDp = 40.dp, modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterHorizontally)
+            )
             VideoItems(
                 modifier = Modifier
                     .weight(1f)
@@ -281,7 +271,7 @@ fun VideoItems(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(bottom = 8.dp), fontSize = 24.sp,
-            color = Color.Black
+            color = Color.White
         )
     }
 }

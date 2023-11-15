@@ -247,7 +247,7 @@ fun StorageAnimation(
                 text = "$storages",
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 fontSize = 24.sp,
-                color = Color.Black
+                color = Color.White
             )
 
         }

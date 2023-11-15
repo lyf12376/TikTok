@@ -16,8 +16,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.Yi.videoplayer.R
 import com.Yi.videoplayer.bean.friends.Friend
 import com.Yi.videoplayer.utils.isNavigationExist
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
 @Composable
@@ -70,6 +73,14 @@ fun MessagePage(paddingValues: PaddingValues) {
     )
     Log.d("TAG1", "MessagePage: $paddingValues")
     Log.d("TAG", "MessagePage: ${paddingValues.calculateBottomPadding()}")
+
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setSystemBarsColor(
+            color = Color.Transparent,
+            darkIcons = true
+        )
+    }
 
     Column(
         modifier = Modifier.padding(paddingValues)

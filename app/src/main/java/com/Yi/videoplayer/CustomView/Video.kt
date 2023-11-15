@@ -3,6 +3,7 @@ package com.Yi.videoplayer.CustomView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
@@ -20,24 +21,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.Yi.videoplayer.R
 
 @Composable
-@Preview
-fun Video() {
+fun Video(modifier: Modifier) {
     val context = LocalContext.current
     val exoPlayer = ExoPlayer.Builder(context).build()
     val mediaItem =
-        MediaItem.fromUri("https://v3-web.douyinvod.com/88190629246ba42dafa64f943f00af87/6554404b/video/tos/cn/tos-cn-ve-15c001-alinc2/oAleCnLG7B2Q4Ae9FAFIDITgESAqgBb53cjnD8/?a=6383&ch=26&cr=3&dr=0&lr=all&cd=0%7C0%7C0%7C3&cv=1&br=1205&bt=1205&cs=0&ds=4&ft=bvTKJbQQqUYSfJ.Zao0OW_EklpPiX3qfOFVJEUyy75vPD-I&mime_type=video_mp4&qs=0&rc=OmQ2NGZpNmlkZWU7aWk1M0BpM3VuajU6ZmhybzMzNGkzM0AvLTVfL14uNWAxYzE2Xl8uYSNjMmJlcjRvYjJgLS1kLS9zcw%3D%3D&btag=e00010000&dy_q=1700016683&feature_id=46a7bb47b4fd1280f3d3825bf2b29388&l=20231115105123E3C423A3957A2A635771")
+        MediaItem.fromUri("https://v26-web.douyinvod.com/895d233a732606cd4a8a1e87ca91f5d2/65546ac0/video/tos/cn/tos-cn-ve-15c001-alinc2/owLyBRh8hXyfsggAdg2IizpwevtQzAVEAtOEPD/?a=6383&ch=26&cr=3&dr=0&lr=all&cd=0%7C0%7C0%7C3&cv=1&br=1711&bt=1711&cs=0&ds=3&ft=bvTKJbQQqUYSfJ.Zao0OW_EklpPiXLPhOFVJEUyy75vPD-I&mime_type=video_mp4&qs=1&rc=NmllOjk1ODpnZTM1Njg4N0Bpamk1dTc6ZmVxbjMzNGkzM0BjYDI1MGFhX2MxL2BgMl5eYSNtbF5ocjRvYzVgLS1kLTBzcw%3D%3D&btag=e00038000&dy_q=1700025746&feature_id=46a7bb47b4fd1280f3d3825bf2b29388&l=202311151322266A460427E8FA1D08AC05")
     exoPlayer.setMediaItem(mediaItem)
     exoPlayer.prepare()
     exoPlayer.play()
+    exoPlayer.repeatMode = REPEAT_MODE_ONE
     PlayerSurface(
-        modifier = Modifier
-            .wrapContentSize(),
-        exoPlayer
+        modifier = modifier.fillMaxWidth(),
+        exoPlayer,
     ) {
         it.player = exoPlayer
     }

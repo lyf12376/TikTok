@@ -1,5 +1,6 @@
 package com.Yi.videoplayer.Frame
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,10 +36,15 @@ fun BottomBar(navHostController: NavController, modifier: Modifier) {
     var selected by remember {
         mutableStateOf(1)
     }
+    var color by remember {
+        mutableStateOf(Color.Black)
+    }
+    color = if (currentRoute == Screen.HomePage.route || currentRoute == Screen.FriendsPage.route) Color.Black else Color.White
     Row(
         modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
+            .background(color)
     ) {
         BottomBarItem(
             text = "首页",
@@ -48,7 +55,8 @@ fun BottomBar(navHostController: NavController, modifier: Modifier) {
                     selected = 1
                     navHostController.navigate(Screen.HomePage.route)
                 },
-            selected = selected == 1
+            selected = selected == 1,
+            color = if (color == Color.Black) Color.White else Color.Black
         )
         BottomBarItem(
             text = "朋友",
@@ -59,7 +67,8 @@ fun BottomBar(navHostController: NavController, modifier: Modifier) {
                     selected = 2
                     navHostController.navigate(Screen.FriendsPage.route)
                 },
-            selected = selected == 2
+            selected = selected == 2,
+            color = if (color == Color.Black) Color.White else Color.Black
         )
         BottomBarItem(
             text = "消息",
@@ -70,7 +79,8 @@ fun BottomBar(navHostController: NavController, modifier: Modifier) {
                     selected = 3
                     navHostController.navigate(Screen.MessagePage.route)
                 },
-            selected = selected == 3
+            selected = selected == 3,
+            color = if (color == Color.Black) Color.White else Color.Black
         )
         BottomBarItem(
             text = "我的",
@@ -81,7 +91,8 @@ fun BottomBar(navHostController: NavController, modifier: Modifier) {
                     selected = 4
                     navHostController.navigate(Screen.MinePage.route)
                 },
-            selected = selected == 4
+            selected = selected == 4,
+            color = if (color == Color.Black) Color.White else Color.Black
         )
     }
 
@@ -89,13 +100,14 @@ fun BottomBar(navHostController: NavController, modifier: Modifier) {
 }
 
 @Composable
-fun BottomBarItem(text: String, modifier: Modifier, selected: Boolean = false) {
+fun BottomBarItem(text: String, modifier: Modifier, selected: Boolean = false, color: Color) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Text(
             text = text,
             fontFamily = FontFamily(Font(R.font.cute)),
-            fontSize = 18.sp,
-            color = if (selected) Color.Blue else Color.Black
+            fontSize = if (selected) 20.sp else 18.sp,
+            color = color,
+            fontWeight = if (selected)FontWeight.Bold else FontWeight.Medium
         )
     }
 }

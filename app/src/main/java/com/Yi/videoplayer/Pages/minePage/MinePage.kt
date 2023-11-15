@@ -24,6 +24,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.Yi.videoplayer.Pages.ScreenData
 import com.Yi.videoplayer.R
 import com.Yi.videoplayer.bean.TabItem
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 
 //height837.0.dp
@@ -54,6 +56,14 @@ fun MinePage() {
 
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
+
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setSystemBarsColor(
+            color = Color.Transparent,
+            darkIcons = true
+        )
+    }
 
 
     Box(
