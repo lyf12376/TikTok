@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.Yi.videoplayer.R
 import com.Yi.videoplayer.bean.friends.Friend
+import com.Yi.videoplayer.bean.user.UserDocument
 import com.Yi.videoplayer.utils.isNavigationExist
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -34,42 +35,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @Composable
 fun MessagePage(paddingValues: PaddingValues) {
     val list = listOf(
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
-        Friend(R.drawable.add, "123"),
-        Friend(R.drawable.camera, " 456"),
+        Friend(UserDocument("123","123",R.drawable.add, emptyList()) ),
     )
     Log.d("TAG1", "MessagePage: $paddingValues")
     Log.d("TAG", "MessagePage: ${paddingValues.calculateBottomPadding()}")
@@ -86,8 +52,8 @@ fun MessagePage(paddingValues: PaddingValues) {
         modifier = Modifier.padding(paddingValues)
     ) {
         TopBar()
-        friendRow(list)
-        friendColumn(list)
+//        friendRow(list)
+//        friendColumn(list)
     }
 }
 
@@ -127,13 +93,13 @@ fun friendRow(list: List<Friend>) {
             item {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Icon(
-                        painterResource(id = friend.photo),
-                        contentDescription = "${friend.name}",
+                        painterResource(id = friend.document.avatar),
+                        contentDescription = friend.document.name,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "${friend.name}",
+                        text = friend.document.name,
                         fontFamily = FontFamily(Font(R.font.cute)),
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
@@ -152,14 +118,14 @@ fun friendColumn(list: List<Friend>) {
                     .padding(vertical = 12.dp)
                     .fillMaxWidth()) {
                     Icon(
-                        painterResource(id = it.photo),
-                        contentDescription = "${it.name}",
+                        painterResource(id = it.document.avatar),
+                        contentDescription = it.document.name,
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
                             .padding(horizontal = 12.dp)
                     )
                     Text(
-                        text = "${it.name}",
+                        text = it.document.name,
                         fontFamily = FontFamily(Font(R.font.cute)),
                     )
                 }

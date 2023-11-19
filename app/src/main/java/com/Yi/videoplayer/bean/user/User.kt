@@ -1,9 +1,9 @@
 package com.Yi.videoplayer.bean.user
 
-data class User (
-    val userName:String,
-    val password:String,
-    val headPhoto:String,
-    val email:String,
-    val gender:String
+data class User(
+    val nickName: String,
+    val phoneNumber: String,
+    val email: String,
+    val password: String,
+    val code: String //验证码
 )

@@ -23,29 +23,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.PointMode
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.DrawStyle
-import androidx.compose.ui.graphics.drawscope.Fill
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.Yi.videoplayer.Pages.homePage.recommend.RecommendViewModel
+import com.Yi.videoplayer.Pages.shortVideo.ShortVideoViewModel
 import com.Yi.videoplayer.R
+import com.Yi.videoplayer.bean.shortVideo.ShortVideo
 import com.Yi.videoplayer.utils.DpToPx
 import kotlinx.coroutines.delay
 import kotlin.math.cos
@@ -56,7 +47,8 @@ fun StorageAnimation(
     widthDp: Dp,
     heightDp: Dp,
     modifier: Modifier,
-    viewModel: RecommendViewModel = hiltViewModel()
+    shortVideo: ShortVideo,
+    viewModel: ShortVideoViewModel = hiltViewModel()
 ) {
     var start by remember {
         mutableStateOf(false)
@@ -65,7 +57,10 @@ fun StorageAnimation(
         Animatable(1f)
     }
     var storaged by remember {
-        mutableStateOf(false)
+        mutableStateOf(shortVideo.isStorage)
+    }
+    var storages by remember {
+        mutableStateOf(shortVideo.storage)
     }
     var enabled by remember {
         mutableStateOf(true)
@@ -152,7 +147,7 @@ fun StorageAnimation(
         val pointRadius = if (i % 2 == 0) radius else radius * 0.5f
         val x = centerX + pointRadius * cos(currentAngle)
         val y = centerY + pointRadius * sin(currentAngle)
-        Log.d("TAG", "StorageAnimation: x $x, y $y")
+        //Log.d("TAG", "StorageAnimation: x $x, y $y")
         if (i == 0) {
             starPath.moveTo(x.toFloat(), y.toFloat())
         } else {
@@ -175,7 +170,7 @@ fun StorageAnimation(
     var distance = 0f // 距离起点的距离
     while (distance <= totalLength) {
         val point = pathMeasure.getPosition(distance) // 获取路径上指定距离处的点的坐标
-        Log.d("TAG", "StorageAnimation: ${pathMeasure.getPosition(0f)}")
+        //Log.d("TAG", "StorageAnimation: ${pathMeasure.getPosition(0f)}")
         points.add(point) // 将点的坐标添加到集合中
 
         distance += distanceInterval // 增加距离，以便获取下一个点的坐标
@@ -183,11 +178,10 @@ fun StorageAnimation(
 
     for (point in points) {
         // 处理每个点的坐标
-        Log.d("TAG", "LikeAnimation: $point")
+        //Log.d("TAG", "LikeAnimation: $point")
     }
 
-    val storage by viewModel.storage
-    val storages by viewModel.storages
+
     Box(
         modifier = modifier
     ) {
@@ -198,8 +192,8 @@ fun StorageAnimation(
                     .width(40.dp)
             ) {
                 Image(
-                    painterResource(id = if (storage) R.drawable.storage_selected else R.drawable.storage_unselected),
-                    contentDescription = "喜欢",
+                    painterResource(id = if (storaged) R.drawable.storage_selected else R.drawable.storage_unselected),
+                    contentDescription = "收藏",
                     modifier = Modifier
                         .align(
                             Alignment.Center
@@ -208,16 +202,14 @@ fun StorageAnimation(
                         .scale(storageScale.value)
                         .clickable(enabled = enabled) {
                             start = true
-                            if (viewModel.storage.value) {
-                                viewModel.storage.value = !viewModel.storage.value
-                                viewModel.storages.value--
+                            if (storaged) {
                                 storaged = !storaged
+                                storages--
                                 isClicked = !isClicked
                             } else {
                                 enabled = false
-                                viewModel.storage.value = !viewModel.storage.value
-                                viewModel.storages.value++
                                 storaged = !storaged
+                                storages++
                                 isClicked = !isClicked
                             }
                         }
@@ -255,9 +247,9 @@ fun StorageAnimation(
     }
 }
 
-@Composable
-@Preview
-fun starPrev(){
-    StorageAnimation(widthDp = 40.dp, heightDp = 40.dp, modifier = Modifier)
-
-}
+//@Composable
+//@Preview
+//fun starPrev(){
+//    StorageAnimation(widthDp = 40.dp, heightDp = 40.dp, modifier = Modifier)
+//
+//}

@@ -35,8 +35,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.Yi.videoplayer.Pages.homePage.recommend.RecommendViewModel
+import com.Yi.videoplayer.Pages.shortVideo.ShortVideoViewModel
 import com.Yi.videoplayer.R
+import com.Yi.videoplayer.bean.shortVideo.ShortVideo
 import com.Yi.videoplayer.utils.DpToPx
 import kotlinx.coroutines.delay
 
@@ -45,7 +46,8 @@ fun LikeAnimation(
     widthDp: Dp,
     heightDp: Dp,
     modifier: Modifier,
-    viewModel: RecommendViewModel = hiltViewModel()
+    shortVideo: ShortVideo,
+    viewModel: ShortVideoViewModel = hiltViewModel()
 ) {
     var start by remember {
         mutableStateOf(false)
@@ -54,7 +56,10 @@ fun LikeAnimation(
         Animatable(1f)
     }
     var liked by remember {
-        mutableStateOf(false)
+        mutableStateOf(shortVideo.isLike)
+    }
+    var likes by remember {
+        mutableStateOf(shortVideo.like)
     }
     var enabled by remember {
         mutableStateOf(true)
@@ -123,7 +128,6 @@ fun LikeAnimation(
             enabled = true
         }
     }
-    val painter: Painter = painterResource(R.drawable.like_selected)
     val path = Path()
     val width = DpToPx(dp = widthDp)
     val height = DpToPx(dp = heightDp)
@@ -160,7 +164,7 @@ fun LikeAnimation(
     val pathMeasure = PathMeasure()
     pathMeasure.setPath(path, true) // 设置要测量的路径，并指定路径为封闭的
 
-    val distanceInterval = 10f // 距离间隔，用于控制采样的密度
+    val distanceInterval = 10f
     val totalLength = pathMeasure.length // 获取路径的总长度
 
     val points = mutableListOf<Offset>() // 创建一个空的Offset集合，用于存储点的坐标
@@ -168,18 +172,16 @@ fun LikeAnimation(
     var distance = 0f // 距离起点的距离
     while (distance <= totalLength) {
         val point = pathMeasure.getPosition(distance) // 获取路径上指定距离处的点的坐标
-        points.add(point) // 将点的坐标添加到集合中
+        points.add(point)
 
         distance += distanceInterval // 增加距离，以便获取下一个点的坐标
     }
 
     for (point in points) {
         // 处理每个点的坐标
-        Log.d("TAG", "LikeAnimation: $point")
+        //Log.d("TAG", "LikeAnimation: $point")
     }
 
-    val like by viewModel.like
-    val likes by viewModel.likes
     Box(
         modifier = modifier
     ) {
@@ -190,7 +192,7 @@ fun LikeAnimation(
                     .width(40.dp)
             ) {
                 Image(
-                    painterResource(id = if (like) R.drawable.like_selected else R.drawable.like_unselected),
+                    painterResource(id = if (liked) R.drawable.like_selected else R.drawable.like_unselected),
                     contentDescription = "喜欢",
                     modifier = Modifier
                         .align(
@@ -200,16 +202,15 @@ fun LikeAnimation(
                         .scale(likeScale.value)
                         .clickable(enabled = enabled) {
                             start = true
-                            if (viewModel.like.value) {
-                                viewModel.like.value = !viewModel.like.value
-                                viewModel.likes.value--
+                            if (liked) {
+                                Log.d("TAG", "LikeAnimation: $liked")
                                 liked = !liked
+                                likes--
                                 isClicked = !isClicked
                             } else {
                                 enabled = false
-                                viewModel.like.value = !viewModel.like.value
-                                viewModel.likes.value++
                                 liked = !liked
+                                likes++
                                 isClicked = !isClicked
                             }
                         }

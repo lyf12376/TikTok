@@ -1,6 +1,10 @@
 package com.Yi.videoplayer.di.AppModule
 
+import android.app.Application
 import android.content.Context
+import androidx.media3.exoplayer.ExoPlayer
+import com.Yi.videoplayer.network.UserService
+import com.Yi.videoplayer.network.VideoService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,13 +20,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    const val OFFICIAL_URL:String = "http://123.56.73.64:8888/"
-    const val OFFICIAL = "Official"
+    private const val OFFICIAL_URL:String = "http://123.56.73.64:8888/"
     /**
      *提供OkHttpClient对象,在其中添加拦截器，给header添加cookie，为未来需要cookie的接口做准备 */
     @Singleton
     @Provides
-    fun providerClient(@ApplicationContext context: Context): OkHttpClient {
+    fun provideClient(@ApplicationContext context: Context): OkHttpClient {
         return OkHttpClient.Builder()
             .connectTimeout(3000L,TimeUnit.MILLISECONDS)
             .writeTimeout(3000L,TimeUnit.MILLISECONDS)
@@ -36,12 +39,24 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun providerOfficialRetrofit(client: OkHttpClient): Retrofit {
+    fun provideRetrofit(client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(OFFICIAL_URL)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserService(retrofit:Retrofit): UserService{
+        return retrofit.create(UserService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideVideoService(retrofit:Retrofit): VideoService{
+        return retrofit.create(VideoService::class.java)
     }
 
 

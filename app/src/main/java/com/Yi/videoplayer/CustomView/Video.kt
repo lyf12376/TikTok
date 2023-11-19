@@ -1,49 +1,134 @@
 package com.Yi.videoplayer.CustomView
 
+import android.net.Uri
+import android.util.Log
+import android.view.ViewGroup
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.Yi.videoplayer.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 @Composable
-fun Video(modifier: Modifier) {
+fun Video(modifier: Modifier, uri: String, pagerState: PagerState, pageIndex: Int) {
     val context = LocalContext.current
-    val exoPlayer = ExoPlayer.Builder(context).build()
-    val mediaItem =
-        MediaItem.fromUri("https://v26-web.douyinvod.com/895d233a732606cd4a8a1e87ca91f5d2/65546ac0/video/tos/cn/tos-cn-ve-15c001-alinc2/owLyBRh8hXyfsggAdg2IizpwevtQzAVEAtOEPD/?a=6383&ch=26&cr=3&dr=0&lr=all&cd=0%7C0%7C0%7C3&cv=1&br=1711&bt=1711&cs=0&ds=3&ft=bvTKJbQQqUYSfJ.Zao0OW_EklpPiXLPhOFVJEUyy75vPD-I&mime_type=video_mp4&qs=1&rc=NmllOjk1ODpnZTM1Njg4N0Bpamk1dTc6ZmVxbjMzNGkzM0BjYDI1MGFhX2MxL2BgMl5eYSNtbF5ocjRvYzVgLS1kLTBzcw%3D%3D&btag=e00038000&dy_q=1700025746&feature_id=46a7bb47b4fd1280f3d3825bf2b29388&l=202311151322266A460427E8FA1D08AC05")
-    exoPlayer.setMediaItem(mediaItem)
-    exoPlayer.prepare()
-    exoPlayer.play()
-    exoPlayer.repeatMode = REPEAT_MODE_ONE
-    PlayerSurface(
-        modifier = modifier.fillMaxWidth(),
-        exoPlayer,
-    ) {
-        it.player = exoPlayer
+    var isFirstFrameLoad = remember { false }
+//    val exoPlayer = ExoPlayer.Builder(context).build()
+//    val mediaItem = MediaItem.fromUri(uri)
+//    //Log.d("TAG", "Video: ===---$uri---===")
+//    exoPlayer.setMediaItem(mediaItem)
+//    exoPlayer.prepare()
+//    exoPlayer.play()
+//    exoPlayer.repeatMode = REPEAT_MODE_ONE
+//    PlayerSurface(
+//        modifier = modifier.fillMaxWidth(),
+//        exoPlayer,
+//    ) {
+//        it.player = exoPlayer
+//    }
+        if (pagerState.settledPage == pageIndex) {
+        val exoPlayer = remember(context) {
+            ExoPlayer.Builder(context).build().apply {
+                videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
+                repeatMode = REPEAT_MODE_ONE
+                setMediaItem(MediaItem.fromUri(uri))
+                playWhenReady = true
+                prepare()
+                addListener(object : Player.Listener {
+                    override fun onRenderedFirstFrame() {
+                        super.onRenderedFirstFrame()
+                        isFirstFrameLoad = true
+                        //thumbnail = thumbnail.copy(second = false)
+                    }
+                })
+            }
+        }
+
+        val lifecycleOwner by rememberUpdatedState(LocalLifecycleOwner.current)
+        DisposableEffect(key1 = lifecycleOwner) {
+            val lifeCycleObserver = LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_STOP -> {
+                        exoPlayer.pause()
+                    }
+                    Lifecycle.Event.ON_START -> exoPlayer.play()
+                    else -> {}
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(lifeCycleObserver)
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(lifeCycleObserver)
+            }
+        }
+
+        val playerView = remember {
+            PlayerView(context).apply {
+                player = exoPlayer
+                useController = false
+//                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+//                layoutParams = ViewGroup.LayoutParams(
+//                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+//                )
+            }
+        }
+
+        DisposableEffect(key1 = AndroidView(factory = {
+            playerView
+        }, modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = {
+                //onSingleTap(exoPlayer)
+            }, onDoubleTap = { offset ->
+                //onDoubleTap(exoPlayer, offset)
+            })
+        }), effect = {
+            onDispose {
+                //thumbnail = thumbnail.copy(second = true)
+                exoPlayer.release()
+                //onVideoDispose()
+            }
+        })
+            PlayerSurface(modifier = modifier, exoPlayer = exoPlayer){
+                it.player = exoPlayer
+            }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlayerSurface(
     modifier: Modifier,
@@ -63,10 +148,9 @@ fun PlayerSurface(
             },
             modifier = modifier.pointerInput(Unit) {
                 detectTapGestures(
-                    onPress = { /* Called when the gesture starts */ },
-                    onDoubleTap = { /* Called on Double Tap */ },
-                    onLongPress = {
-                                  exoPlayer.setPlaybackSpeed(2f)
+                    onPress = {  },
+                    onDoubleTap = {
+
                     },
                     onTap = {
                         isPlaying = if (exoPlayer.isPlaying) {
