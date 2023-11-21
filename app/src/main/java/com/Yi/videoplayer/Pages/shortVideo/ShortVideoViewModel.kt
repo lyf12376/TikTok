@@ -8,9 +8,5 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ShortVideoViewModel @Inject constructor(): ViewModel(){
-    var like = mutableStateOf(false)
-    var likes = mutableStateOf(0)
-    var comments = mutableStateOf(0)
-    var storage = mutableStateOf(false)
-    var storages = mutableStateOf(0)
+
 }

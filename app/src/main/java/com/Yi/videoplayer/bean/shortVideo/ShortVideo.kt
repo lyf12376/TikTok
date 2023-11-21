@@ -4,6 +4,7 @@ import com.Yi.videoplayer.bean.author.Author
 import com.Yi.videoplayer.bean.comment.Comment
 
 data class ShortVideo (
+    val id:Int,
     val address : String,
     val author:Author,
     val introduction : String,

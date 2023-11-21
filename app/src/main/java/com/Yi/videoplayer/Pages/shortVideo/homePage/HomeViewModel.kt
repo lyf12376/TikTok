@@ -20,19 +20,19 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val service:UserService) : ViewModel() {
 
-    fun test(){
-        service.sendMail(Captcha("1357587070@qq.com","regist")).enqueue(object : Callback<JsonObject> {
-            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                val body = response.body().toString()
-                Log.d("-=-=-=-=-=-=-=-=-=-=", "onResponse: $body")
-            }
-
-            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                viewModelScope.launch {
-                    Log.d("-=-=-=-=-=-=-=-","error message=${t.message}")
-                }
-            }
-        })
-    }
+//    fun test(){
+//        service.sendMail(Captcha("1357587070@qq.com","regist")).enqueue(object : Callback<JsonObject> {
+//            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+//                val body = response.body().toString()
+//                Log.d("-=-=-=-=-=-=-=-=-=-=", "onResponse: $body")
+//            }
+//
+//            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+//                viewModelScope.launch {
+//                    Log.d("-=-=-=-=-=-=-=-","error message=${t.message}")
+//                }
+//            }
+//        })
+//    }
 
 }

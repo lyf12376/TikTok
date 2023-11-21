@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.Yi.videoplayer.Pages.shortVideo.ShortVideoViewModel
+import com.Yi.videoplayer.Pages.shortVideo.homePage.recommend.RecommendViewModel
 import com.Yi.videoplayer.R
 import com.Yi.videoplayer.bean.shortVideo.ShortVideo
 import com.Yi.videoplayer.utils.DpToPx
@@ -47,9 +49,10 @@ fun StorageAnimation(
     widthDp: Dp,
     heightDp: Dp,
     modifier: Modifier,
-    shortVideo: ShortVideo,
-    viewModel: ShortVideoViewModel = hiltViewModel()
+    index:Int,
+    viewModel: RecommendViewModel = hiltViewModel()
 ) {
+    val recommendVideoList by viewModel.shortVideoList.collectAsState()
     var start by remember {
         mutableStateOf(false)
     }
@@ -57,10 +60,10 @@ fun StorageAnimation(
         Animatable(1f)
     }
     var storaged by remember {
-        mutableStateOf(shortVideo.isStorage)
+        mutableStateOf(recommendVideoList[index].isStorage)
     }
     var storages by remember {
-        mutableStateOf(shortVideo.storage)
+        mutableStateOf(recommendVideoList[index].storage)
     }
     var enabled by remember {
         mutableStateOf(true)
@@ -70,7 +73,7 @@ fun StorageAnimation(
         Animatable(1f)
     }
     var isClicked by remember {
-        mutableStateOf(false)
+        mutableStateOf(recommendVideoList[index].isStorage)
     }
     LaunchedEffect(storaged) {
         if (storaged) {
@@ -203,10 +206,18 @@ fun StorageAnimation(
                         .clickable(enabled = enabled) {
                             start = true
                             if (storaged) {
+                                viewModel.updateVideo(
+                                    index,
+                                    recommendVideoList[index].copy(storage = storages-1, isStorage = false)
+                                )
                                 storaged = !storaged
                                 storages--
                                 isClicked = !isClicked
                             } else {
+                                viewModel.updateVideo(
+                                    index,
+                                    recommendVideoList[index].copy(storage = storages+1, isStorage = true)
+                                )
                                 enabled = false
                                 storaged = !storaged
                                 storages++

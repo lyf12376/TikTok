@@ -6,6 +6,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -13,9 +14,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,26 +32,33 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.drawscope.scale
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.Yi.videoplayer.Pages.shortVideo.ShortVideoViewModel
+import com.Yi.videoplayer.Pages.shortVideo.homePage.recommend.RecommendViewModel
 import com.Yi.videoplayer.R
 import com.Yi.videoplayer.bean.shortVideo.ShortVideo
 import com.Yi.videoplayer.utils.DpToPx
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LikeAnimation(
     widthDp: Dp,
     heightDp: Dp,
     modifier: Modifier,
-    shortVideo: ShortVideo,
-    viewModel: ShortVideoViewModel = hiltViewModel()
+    index:Int,
+//    love: () -> Int,
+//    unLove:Unit,
+//    storage:Unit,
+//    unStorage:Unit,
+    viewModel: RecommendViewModel = hiltViewModel()
 ) {
+
+    val recommendVideoList by viewModel.shortVideoList.collectAsState()
     var start by remember {
         mutableStateOf(false)
     }
@@ -56,20 +66,19 @@ fun LikeAnimation(
         Animatable(1f)
     }
     var liked by remember {
-        mutableStateOf(shortVideo.isLike)
+        mutableStateOf(recommendVideoList[index].isLike)
     }
     var likes by remember {
-        mutableStateOf(shortVideo.like)
+        mutableStateOf(recommendVideoList[index].like)
     }
     var enabled by remember {
         mutableStateOf(true)
     }
-    val offsetX = DpToPx(dp = 50.dp)
     val animScale = remember {
         Animatable(1f)
     }
     var isClicked by remember {
-        mutableStateOf(false)
+        mutableStateOf(recommendVideoList[index].isLike)
     }
     LaunchedEffect(liked) {
         if (liked) {
@@ -131,7 +140,7 @@ fun LikeAnimation(
     val path = Path()
     val width = DpToPx(dp = widthDp)
     val height = DpToPx(dp = heightDp)
-    path.moveTo(width / 2, height / 5);
+    path.moveTo(width / 2, height / 5)
 
     // Upper left path
     path.cubicTo(
@@ -203,14 +212,23 @@ fun LikeAnimation(
                         .clickable(enabled = enabled) {
                             start = true
                             if (liked) {
-                                Log.d("TAG", "LikeAnimation: $liked")
+                                viewModel.updateVideo(
+                                    index,
+                                    recommendVideoList[index].copy(like = likes-1, isLike = false)
+                                )
                                 liked = !liked
                                 likes--
+                                Log.d("likes", "LikeAnimation: $likes")
                                 isClicked = !isClicked
                             } else {
                                 enabled = false
+                                viewModel.updateVideo(
+                                    index,
+                                    recommendVideoList[index].copy(like = likes+1, isLike = true)
+                                )
                                 liked = !liked
                                 likes++
+                                Log.d("likes", "LikeAnimation: $likes")
                                 isClicked = !isClicked
                             }
                         }

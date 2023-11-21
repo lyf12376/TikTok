@@ -3,8 +3,14 @@ package com.Yi.videoplayer.di.AppModule
 import android.app.Application
 import android.content.Context
 import androidx.media3.exoplayer.ExoPlayer
+import com.Yi.videoplayer.Const.Url
+import com.Yi.videoplayer.R
+import com.Yi.videoplayer.Room.User.UsersDao
+import com.Yi.videoplayer.Room.User.UsersDatabase
 import com.Yi.videoplayer.network.UserService
 import com.Yi.videoplayer.network.VideoService
+import com.example.roomtest.room.savedUser.SavedUserDao
+import com.example.roomtest.room.savedUser.SavedUserDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +26,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    private const val OFFICIAL_URL:String = "http://123.56.73.64:8888/"
+    private const val OFFICIAL_URL:String = Url.OFFICIAL_URL
     /**
      *提供OkHttpClient对象,在其中添加拦截器，给header添加cookie，为未来需要cookie的接口做准备 */
     @Singleton
@@ -57,6 +63,30 @@ object AppModule {
     @Provides
     fun provideVideoService(retrofit:Retrofit): VideoService{
         return retrofit.create(VideoService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSavedUserDatabase(@ApplicationContext context: Context): SavedUserDatabase {
+        return SavedUserDatabase.getDatabase(context)
+    }
+
+    @Singleton
+    @Provides
+    fun getSavedUserDao(database: SavedUserDatabase): SavedUserDao {
+        return database.savedUserDao()
+    }
+
+    @Singleton
+    @Provides
+    fun getUserDatabase(@ApplicationContext context : Context): UsersDatabase {
+        return UsersDatabase.getDatabase(context)
+    }
+
+    @Singleton
+    @Provides
+    fun getUserDao(database: UsersDatabase): UsersDao {
+        return database.usersDao()
     }
 
 
