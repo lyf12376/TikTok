@@ -38,7 +38,7 @@ fun HomePage(paddingValues: PaddingValues, homeViewModel: HomeViewModel = hiltVi
         TabItem(title = "长视频"),
 
     )
-    homeViewModel.test()
+
 
 
     val coroutineScope = rememberCoroutineScope()

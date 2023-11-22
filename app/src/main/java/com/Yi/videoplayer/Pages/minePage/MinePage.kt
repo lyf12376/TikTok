@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.Yi.videoplayer.Pages.ScreenData
+import com.Yi.videoplayer.Pages.login.noRippleClickable
 import com.Yi.videoplayer.R
 import com.Yi.videoplayer.bean.TabItem
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -115,11 +116,11 @@ fun MinePage() {
                         text(amount = 0, text = "关注", modifier = Modifier)
                         text(amount = 0, text = "粉丝", modifier = Modifier)
                     }
-                    Row {
+                    Row (Modifier.noRippleClickable {  }){
                         Text(
                             text = "点击添加介绍让大家认识你...",
                             fontSize = 16.sp,
-                            modifier = Modifier.padding(start = 20.dp).clickable { },
+                            modifier = Modifier.padding(start = 20.dp),
                             fontWeight = FontWeight.Light
                         )
                         Icon(
@@ -155,16 +156,13 @@ fun MinePage() {
                     ) { page ->
                         when (page) {
                             0 -> {
-                                Text("推荐", modifier = Modifier.fillMaxSize())
+                                Text("我的", modifier = Modifier.fillMaxSize())
                             }
 
                             1 -> {
-                                Text("长视频", modifier = Modifier.fillMaxSize())
+                                Text("收藏", modifier = Modifier.fillMaxSize())
                             }
 
-                            2 -> {
-                                Text("本地", modifier = Modifier.fillMaxSize())
-                            }
                         }
                     }
                 }
@@ -190,3 +188,4 @@ fun text(amount: Int, text: String, modifier: Modifier) {
 fun minePage() {
     MinePage()
 }
+

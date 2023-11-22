@@ -47,6 +47,7 @@ class MainActivity : ComponentActivity() {
             MainFrame()
         }
     }
+
 }
 
 
@@ -62,3 +63,4 @@ fun TransparentSystemBars() {
         )
     }
 }
+

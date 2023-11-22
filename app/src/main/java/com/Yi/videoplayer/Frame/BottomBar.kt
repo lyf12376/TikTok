@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.Yi.videoplayer.Pages.login.noRippleClickable
 import com.Yi.videoplayer.R
 import com.Yi.videoplayer.navigation.Screen
 import com.Yi.videoplayer.utils.isNavigationExist
@@ -51,7 +52,7 @@ fun BottomBar(navHostController: NavController, modifier: Modifier) {
             modifier = Modifier
                 .weight(1f)
                 .align(Alignment.CenterVertically)
-                .clickable {
+                .noRippleClickable  {
                     selected = 1
                     navHostController.navigate(Screen.HomePage.route)
                 },
@@ -63,7 +64,7 @@ fun BottomBar(navHostController: NavController, modifier: Modifier) {
             modifier = Modifier
                 .weight(1f)
                 .align(Alignment.CenterVertically)
-                .clickable {
+                .noRippleClickable  {
                     selected = 2
                     navHostController.navigate(Screen.FriendsPage.route)
                 },
@@ -75,7 +76,7 @@ fun BottomBar(navHostController: NavController, modifier: Modifier) {
             modifier = Modifier
                 .weight(1f)
                 .align(Alignment.CenterVertically)
-                .clickable {
+                .noRippleClickable {
                     selected = 3
                     navHostController.navigate(Screen.MessagePage.route)
                 },
@@ -87,7 +88,7 @@ fun BottomBar(navHostController: NavController, modifier: Modifier) {
             modifier = Modifier
                 .weight(1f)
                 .align(Alignment.CenterVertically)
-                .clickable {
+                .noRippleClickable {
                     selected = 4
                     navHostController.navigate(Screen.MinePage.route)
                 },

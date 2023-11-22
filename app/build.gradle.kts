@@ -82,6 +82,8 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("com.google.accompanist:accompanist-permissions:0.31.0-alpha")
 
+    implementation("io.github.mr0xf00:easycrop:0.1.1")
+
     //exoplayer
     implementation ("androidx.media3:media3-exoplayer:1.1.1")
     implementation ("androidx.media3:media3-exoplayer-dash:1.1.1")

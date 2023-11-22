@@ -1,10 +1,7 @@
 package com.Yi.videoplayer.di.AppModule
 
-import android.app.Application
 import android.content.Context
-import androidx.media3.exoplayer.ExoPlayer
 import com.Yi.videoplayer.Const.Url
-import com.Yi.videoplayer.R
 import com.Yi.videoplayer.Room.User.UsersDao
 import com.Yi.videoplayer.Room.User.UsersDatabase
 import com.Yi.videoplayer.network.UserService

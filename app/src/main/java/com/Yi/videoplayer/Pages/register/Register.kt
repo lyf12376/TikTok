@@ -1,15 +1,15 @@
-package com.Yi.videoplayer.Pages.login
+package com.example.roomtest.nav.register
 
-import android.util.Log
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -17,64 +17,52 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.Yi.videoplayer.R
-import com.Yi.videoplayer.bean.user.UserAccount
-import com.example.roomtest.room.savedUser.SavedUser
+import com.Yi.videoplayer.bean.user.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun Login(
-    navController: NavController,
-    loginViewModel: LoginViewModel = hiltViewModel(),
-) {
+fun Register(navController: NavController) {
     val scope1 = CoroutineScope(Dispatchers.IO)
-
+    var success = false
+    val sendMail = CoroutineScope(Dispatchers.IO)
+    var captcha: Int
     var showDialog by remember {
         mutableStateOf(false)
     }
-    var rememberPassword by remember {
-        mutableStateOf(false)
+    var inputCaptcha by remember {
+        mutableStateOf("")
     }
     var account by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
@@ -82,49 +70,57 @@ fun Login(
     var password by remember {
         mutableStateOf("")
     }
-    val textWidth = 320.dp
+    var isSending by remember {
+        mutableStateOf(false)
+    }
+    var remainingSeconds by remember {
+        mutableStateOf(30)
+    }
+    val textWidth = 300.dp
     val textHeight = 50.dp
-    var navigate = false
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    val savedUserList = loginViewModel.savedUserList.collectAsState(initial = emptyList())
-    Log.d("TAG", "Login:${savedUserList.value.isEmpty()} ")
 
     Box(
         Modifier
             .fillMaxSize()
-            .noRippleClickable { focusManager.clearFocus() }
-            .background(Color("#343447".toColorInt()))) {}
+            .background(Color("#343447".toColorInt()))
+    ) {}
+
     Column(
         Modifier
             .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
-        Spacer(modifier = Modifier.height(96.dp))
-        Image(
-            painterResource(id = R.drawable.login_icon),
-            contentDescription = "登陆图标",
-            modifier = Modifier.align(
-                Alignment.CenterHorizontally
+        Spacer(modifier = Modifier.height(24.dp))
+        Row {
+            Image(
+                painterResource(id = R.drawable.back1),
+                contentDescription = "返回",
+                Modifier
+                    .padding(start = 16.dp)
+                    .clickable { navController.navigate("start") }
             )
-        )
-        Spacer(modifier = Modifier.height(18.dp))
-        Text(
-            text = "A Discussion", modifier = Modifier.align(Alignment.CenterHorizontally),
-            fontSize = 24.sp,
-            fontFamily = FontFamily(Font(R.font.cute)),
-            color = Color("#b9b9b9".toColorInt())
-        )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 36.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "注册",
+                    modifier = Modifier.align(Alignment.Center),
+                    fontSize = 32.sp,
+                    fontFamily = FontFamily(Font(R.font.cute)),
+                    color = Color("#b9b9b9".toColorInt())
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(80.dp))
         Box(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .background(Color.Transparent)
         ) {
-
 
             BasicTextField(
                 value = account,
@@ -133,7 +129,8 @@ fun Login(
                     .width(textWidth)
                     .height(textHeight)
                     .background(Color.Transparent)
-                    .focusRequester(focusRequester)
+                    .focusTarget() // 监听焦点状态
+                    .onFocusChanged { isAccountFocused = it.isFocused }
                     .drawWithContent { // 自定义绘制
                         drawContent() // 绘制原有的内容
                         drawLine(
@@ -170,57 +167,11 @@ fun Login(
                                 )
                             }
                         }
-
-                        var isExpanded by remember {
-                            mutableStateOf(false)
-                        }
-                        IconButton(
-                            onClick = {
-                                isExpanded = !isExpanded
-                                if (savedUserList.value.isNotEmpty())
-                                    expanded = !expanded
-                            }
-                        ) {
-                            Icon(
-                                painterResource(id = if (!isExpanded) R.drawable.pull_down else R.drawable.pull_up),
-                                tint = Color.Unspecified,
-                                contentDescription = "上/下拉"
-                            )
-                        }
                     }
-                },
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.width(textWidth) // 这里的宽度应该和你的TextField的宽度一样
-            ) {
-                savedUserList.value.forEach { savedUser ->
-                    DropdownMenuItem(text = { Text(text = savedUser.account) },
-                        onClick = {
-                            account = savedUser.account
-                            password = savedUser.password
-                            expanded = false
-                        },
-                        trailingIcon = {
-                            Icon(
-                                painterResource(id = R.drawable.clear),
-                                contentDescription = "取消保存",
-                                modifier = Modifier.clickable {
-                                    scope1.launch {
-                                        loginViewModel.deleteUser(savedUser.account)
-                                    }
-                                }
-                            )
-                        }
-                    )
-
                 }
-            }
-
+            )
         }
         Spacer(modifier = Modifier.height(36.dp))
-
         Box(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -274,28 +225,115 @@ fun Login(
             )
         }
         Spacer(modifier = Modifier.height(36.dp))
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .background(Color.Transparent)
+        ) {
+            BasicTextField(
+                value = inputCaptcha,
+                onValueChange = { inputCaptcha = it },
+                modifier = Modifier
+                    .width(textWidth)
+                    .height(textHeight)
+                    .background(Color.Transparent)
+                    .drawWithContent { // 自定义绘制
+                        drawContent() // 绘制原有的内容
+                        drawLine(
+                            color = Color.White, // 线的颜色
+                            start = Offset(0f, size.height), // 线的起点，位于左下角
+                            end = Offset(size.width, size.height) // 线的终点，位于右下角
+                        )
+                    },
+                textStyle = TextStyle(Color.White, fontSize = 18.sp),
+                singleLine = true,
+                decorationBox = { innerTextField ->
+                    Row {
+                        Button(
+                            onClick = {
+
+                            }, shape = RoundedCornerShape(0.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isSending) Color(
+                                    "#22222f".toColorInt()
+                                ) else Color("#465ACA".toColorInt())
+                            ),
+                            modifier = Modifier.width(108.dp),
+                            enabled = !isSending
+                        ) {
+                            if (isSending) {
+                                Text(
+                                    text = "${remainingSeconds}s", modifier = Modifier
+                                        .align(Alignment.CenterVertically),
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily(Font(R.font.cute)),
+                                    color = Color("#b9b9b9".toColorInt())
+                                )
+                                LaunchedEffect(key1 = isSending) {
+                                    while (remainingSeconds > 0) {
+                                        delay(1000L)
+                                        remainingSeconds--
+                                    }
+                                    isSending = false
+                                }
+                            } else {
+                                remainingSeconds = 30
+                                Text(
+                                    text = "验证码",
+                                    modifier = Modifier
+                                        .align(Alignment.CenterVertically),
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily(Font(R.font.cute)),
+                                    color = Color("#b9b9b9".toColorInt())
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxSize(), // 填充所有可用空间
+                            contentAlignment = Alignment.CenterStart // 水平和竖直居中
+                        ) {
+                            innerTextField() // 确保innerTextField在布局中占据了足够的空间
+                        }
+                        if (inputCaptcha != "") {
+                            IconButton(onClick = { inputCaptcha = "" }) {
+                                Icon(
+                                    painterResource(id = R.drawable.clear),
+                                    tint = Color.Unspecified,
+                                    contentDescription = "清空"
+                                )
+                            }
+                        }
+                    }
+                }
+            )
+        }
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("错误") },
+                text = { Text("邮箱地址无效或已经被注册，请输入正确的邮箱地址。") },
+                confirmButton = {
+                    Button(onClick = { showDialog = false }) {
+                        Text("确定")
+                    }
+                }
+            )
+        }
+        Spacer(modifier = Modifier.height(36.dp))
         Button(
             onClick = {
                 runBlocking {
-                    withContext(Dispatchers.IO){
-                        var token = loginViewModel.isLogin(UserAccount(account,password))
-                        if (token!="") {
-                            navigate = true
-                            if (rememberPassword) {
-                                val savedUser = SavedUser(account = account, password = password)
-                                loginViewModel.saveUser(savedUser)
-                            }
-                        } else {
-                            showDialog = true
-                        }
-                    }
-                    if (navigate) {
-                        scope1.launch {
-                            loginViewModel.saveUser(SavedUser(account = account, password = password))
-                        }
-                        navController.navigate("HomePage")
-                    }
+                    scope1.launch {
+                        //TODO()
+                    }.join() // 等待协程结束
+
+                    // 协程结束后进行判断
+
                 }
+
 
             },
             shape = RoundedCornerShape(0.dp),
@@ -306,72 +344,21 @@ fun Login(
             colors = ButtonDefaults.buttonColors(containerColor = Color("#22222f".toColorInt()))
         ) {
             Text(
-                text = "Log In",
+                text = "立即注册",
                 modifier = Modifier.align(Alignment.CenterVertically),
                 fontSize = 28.sp,
                 fontFamily = FontFamily(Font(R.font.cute)),
                 color = Color("#b9b9b9".toColorInt())
             )
         }
-        Spacer(modifier = Modifier.height(9.dp))
-        Row {
-            Checkbox(
-                checked = rememberPassword,
-                onCheckedChange = { rememberPassword = it },
-                modifier = Modifier
-                    .padding(start = 32.dp),
-                colors = CheckboxDefaults.colors(
-                    checkmarkColor = Color("#b9b9b9".toColorInt()), // 设置复选框选中时的颜色
-                    uncheckedColor = Color.Gray, // 设置复选框未选中时的颜色
-                )
-            )
-            Text(
-                text = "Remember Password",
-                modifier = Modifier
-                    .align(Alignment.CenterVertically),
-                fontSize = 12.sp,
-                fontFamily = FontFamily(Font(R.font.cute)),
-                color = Color("#b9b9b9".toColorInt())
-            )
-        }
-
-        Text(
-            text = "Forget Password",
-            modifier = Modifier
-                .align(Alignment.End)
-                .clickable { }
-                .padding(end = 54.dp),
-            fontSize = 12.sp,
-            fontFamily = FontFamily(Font(R.font.cute)),
-            color = Color("#b9b9b9".toColorInt())
-        )
-
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-            Text(
-                text = "Don't have a account?Create One!",
-                modifier = Modifier.clickable { navController.navigate("register") },
-                fontSize = 16.sp,
-                fontFamily = FontFamily(Font(R.font.cute)),
-                color = Color("#b9b9b9".toColorInt())
-            )
-        }
-
-    }
-}
-
-inline fun Modifier.noRippleClickable(
-    crossinline onClick: () -> Unit
-): Modifier = composed {
-    clickable(
-        indication = null,
-        interactionSource = remember { MutableInteractionSource() }) {
-        onClick()
     }
 }
 
 
-@Preview
-@Composable
-fun loginPreview() {
-
+fun isValidEmail(email: String): Boolean {
+    val emailRegex = Regex("[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+\$")
+    return email.matches(emailRegex)
 }
+
+
+
